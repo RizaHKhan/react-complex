@@ -1,30 +1,26 @@
-import React from 'react'
+import React, { useState } from "react";
+import HeaderLoggedOut from "./HeaderLoggedOut";
+import HeaderLoggedIn from "./HeaderLoggedIn";
+import { Link } from "react-router-dom";
 
-function Header () {
+function Header(props) {
   return (
-    <header class="header-bar bg-primary mb-3">
-      <div class="container d-flex flex-column flex-md-row align-items-center p-3">
-        <h4 class="my-0 mr-md-auto font-weight-normal">
-          <a href="/" class="text-white">
+    <header className="header-bar bg-primary mb-3">
+      <div className="container d-flex flex-column flex-md-row align-items-center p-3">
+        <h4 className="my-0 mr-md-auto font-weight-normal">
+          <Link to="/" className="text-white">
             ComplexApp
-          </a>
+          </Link>
         </h4>
-        <form class="mb-0 pt-2 pt-md-0">
-          <div class="row align-items-center">
-            <div class="col-md mr-0 pr-md-0 mb-3 mb-md-0">
-              <input name="username" class="form-control form-control-sm input-dark" type="text" placeholder="Username" autocomplete="off" />
-            </div>
-            <div class="col-md mr-0 pr-md-0 mb-3 mb-md-0">
-              <input name="password" class="form-control form-control-sm input-dark" type="password" placeholder="Password" />
-            </div>
-            <div class="col-md-auto">
-              <button class="btn btn-success btn-sm">Sign In</button>
-            </div>
-          </div>
-        </form>
+        {props.loggedIn ? (
+          <HeaderLoggedIn setLoggedIn={props.setLoggedIn} />
+        ) : (
+          <HeaderLoggedOut setLoggedIn={props.setLoggedIn} />
+        )}
       </div>
     </header>
-  )
+  );
 }
 
-export default Header
+export default Header;
+
