@@ -1,11 +1,12 @@
 import { Link } from "react-router-dom";
-
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
+import ExampleContext from "../ExampleContext";
 import Axios from "axios";
 
 function HeaderLoggedOut(props) {
+  const { setLoggedIn } = useContext(ExampleContext);
   function handleLogout() {
-    props.setLoggedIn(false);
+    setLoggedIn(false);
     localStorage.removeItem("complexappToken");
     localStorage.removeItem("complexappUsername");
     localStorage.removeItem("complexappAvatar");
