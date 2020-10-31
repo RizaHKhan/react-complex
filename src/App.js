@@ -13,6 +13,7 @@ import ViewSinglePost from "./components/ViewSinglePost";
 import FlashMessages from "./components/FlashMessages";
 import DispatchContext from "./DispatchContext";
 import StateContext from "./StateContext";
+import EditPost from './components/EditPost'
 import Axios from "axios";
 import "./App.css";
 
@@ -80,7 +81,10 @@ function App() {
             <Route path="/create-post">
               <CreatePost />
             </Route>
-            <Route path="/post/:id">
+            <Route path="/post/:id/edit" exact>
+              <EditPost />
+            </Route>
+            <Route path="/post/:id" exact>
               <ViewSinglePost />
             </Route>
           </Switch>
