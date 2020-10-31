@@ -13,7 +13,9 @@ import ViewSinglePost from "./components/ViewSinglePost";
 import FlashMessages from "./components/FlashMessages";
 import DispatchContext from "./DispatchContext";
 import StateContext from "./StateContext";
-import EditPost from './components/EditPost'
+import EditPost from "./components/EditPost";
+import NotFound from "./components/NotFound";
+import Search from "./components/Search";
 import Axios from "axios";
 import "./App.css";
 
@@ -28,6 +30,7 @@ function App() {
       userName: localStorage.getItem("complexappUsername"),
       avatar: localStorage.getItem("complexappAvatar"),
     },
+    isSearchOpen: false,
   };
 
   function ourReducer(draft, action) {
@@ -41,6 +44,12 @@ function App() {
         return;
       case "flashMessage":
         draft.flashMessages.push(action.value);
+        return;
+      case "openSearch":
+        draft.isSearchOpen = true
+        return;
+      case "closeSearch":
+        draft.isSearchOpen = false
         return;
     }
   }
@@ -87,7 +96,11 @@ function App() {
             <Route path="/post/:id" exact>
               <ViewSinglePost />
             </Route>
+            <Route>
+              <NotFound />
+            </Route>
           </Switch>
+          { state.isSearchOpen ? <Search /> : ''}
           <Footer />
         </BrowserRouter>
       </DispatchContext.Provider>
