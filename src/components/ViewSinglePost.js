@@ -1,19 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { useParams, Link } from 'react-router-dom'
-import LoadingDotsIcon from './LoadingDotsIcon'
+import { useParams, Link } from "react-router-dom";
+import LoadingDotsIcon from "./LoadingDotsIcon";
 import Axios from "axios";
+import ReactMarkdown from "react-markdown";
 
 function ViewSinglePost() {
-  const {id} = useParams()
-  const [isLoading, setIsLoading] = useState(true)
-  const [post, setPost] = useState()
+  const { id } = useParams();
+  const [isLoading, setIsLoading] = useState(true);
+  const [post, setPost] = useState();
 
   useEffect(() => {
-    const ourRequest = Axios.CancelToken.source()
+    const ourRequest = Axios.CancelToken.source();
 
     async function fetchPost() {
       try {
-        const response = await Axios.get(`/post/${id}`, { cancelToken: ourRequest.token });
+        const response = await Axios.get(`/post/${id}`, {
+          cancelToken: ourRequest.token,
+        });
         setPost(response.data);
         setIsLoading(false);
       } catch (e) {
@@ -23,15 +26,16 @@ function ViewSinglePost() {
     fetchPost();
     return () => {
       // Unmount hook basically
-      ourRequest.cancel()
-    }
+      ourRequest.cancel();
+    };
   }, []);
 
+  if (isLoading) return <LoadingDotsIcon />;
 
-  if (isLoading) return <LoadingDotsIcon />
-
-  const date = new Date(post.createdDate)
-  const dateFormatted = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`
+  const date = new Date(post.createdDate);
+  const dateFormatted = `${
+    date.getMonth() + 1
+  }/${date.getDate()}/${date.getFullYear()}`;
 
   return (
     <div class="container">
@@ -49,16 +53,27 @@ function ViewSinglePost() {
 
       <p className="text-muted small mb-4">
         <Link to={`/profile/${post.author.username}`}>
-          <img
-            className="avatar-tiny"
-            src={post.author.avatar}
-          />
+          <img className="avatar-tiny" src={post.author.avatar} />
         </Link>
-        Posted by <Link to={`/profile/${post.author.username}`}>{post.author.usename}</Link> on {dateFormatted}
+        Posted by{" "}
+        <Link to={`/profile/${post.author.username}`}>
+          {post.author.usename}
+        </Link>{" "}
+        on {dateFormatted}
       </p>
 
       <div className="body-content">
-        {post.body}
+        <ReactMarkdown
+          source={post.body}
+          allowedTypes={[
+            "paragraphs",
+            "strong",
+            "text",
+            "heading",
+            "list",
+            "listItem",
+          ]}
+        />
       </div>
     </div>
   );
