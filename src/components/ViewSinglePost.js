@@ -34,7 +34,7 @@ function ViewSinglePost(props) {
       // Unmount hook basically
       ourRequest.cancel();
     };
-  }, []);
+  }, [id]);
 
   if (!isLoading && !post) {
     return <NotFound item={"pants"} />;
