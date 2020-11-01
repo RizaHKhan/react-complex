@@ -1,8 +1,16 @@
 import React, { useContext, useEffect } from "react";
+import Axios from "axios";
+import { useImmer } from "use-immer";
 import DispatchContext from "../DispatchContext";
 
 function Search(props) {
   const appDispatch = useContext(DispatchContext);
+  const [state, setState] = useImmer({
+    searchTerm: "",
+    results: [],
+    show: "neither",
+    requestCount: 0,
+  });
 
   useEffect(() => {
     document.addEventListener("keyup", searchKeyPressHandler);
@@ -12,10 +20,52 @@ function Search(props) {
     };
   }, []);
 
+  useEffect(() => {
+    const delay = setTimeout(() => {
+      setState((draft) => {
+        draft.requestCount++;
+      });
+    }, 3000);
+
+    return () => clearTimeout(delay);
+  }, [state.searchTerm]);
+
+  useEffect(() => {
+    if (state.requestCount) {
+      const ourRequest = Axios.CancelToken.source();
+
+      async function fetchResults() {
+        try {
+          const response = await Axios.post(
+            "/search",
+            { searchTerm: state.searchTerm },
+            { cancelToken: ourRequest.token }
+          );
+          setState((draft) => {
+            draft.results = response.data;
+          });
+        } catch (e) {
+          console.log(e, "There was a problem or the request was cancelled");
+        }
+      }
+
+      fetchResults();
+
+      return () => ourRequest.cancel();
+    }
+  }, [state.requestCount]);
+
   function searchKeyPressHandler(e) {
     if (e.keyCode == 27) {
-      appDispatch({type: 'closeSearch'})
+      appDispatch({ type: "closeSearch" });
     }
+  }
+
+  function handleInput(e) {
+    const value = e.target.value;
+    setState((draft) => {
+      draft.searchTerm = value;
+    });
   }
 
   return (
@@ -26,6 +76,7 @@ function Search(props) {
             <i className="fas fa-search"></i>
           </label>
           <input
+            onChange={handleInput}
             autoFocus
             type="text"
             autocomplete="off"
