@@ -5,9 +5,8 @@ import DispatchContext from "../DispatchContext";
 import { useImmer } from "use-immer";
 import io from "socket.io-client";
 
-const socket = io("http://localhost:8080");
-
 function Chat() {
+  const socket = useRef(null);
   const chatField = useRef(null);
   const chatLog = useRef(null);
   const appState = useContext(StateContext);
@@ -32,11 +31,14 @@ function Chat() {
   }, [state.chatMessages]);
 
   useEffect(() => {
-    socket.on("chatFromServer", (message) => {
+    socket.current = io("http://localhost:8080");
+    socket.current.on("chatFromServer", (message) => {
       setState((draft) => {
         draft.chatMessages.push(message);
       });
     });
+
+    return () => socket.current.disconnect();
   }, []);
 
   function handleFieldChange(e) {
@@ -49,7 +51,7 @@ function Chat() {
   function handleSubmit(e) {
     e.preventDefault();
 
-    socket.emit("chatFromBrowser", {
+    socket.current.emit("chatFromBrowser", {
       message: state.fieldValue,
       token: appState.user.token,
     });
