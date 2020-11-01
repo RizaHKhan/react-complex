@@ -101,7 +101,12 @@ function App() {
               <NotFound />
             </Route>
           </Switch>
-          <CSSTransition timeout={330} in={state.isSearchOpen} classNames="search-overlay" unmountOnExit>
+          <CSSTransition
+            timeout={330}
+            in={state.isSearchOpen}
+            classNames="search-overlay"
+            unmountOnExit
+          >
             <Search />
           </CSSTransition>
           <Footer />
