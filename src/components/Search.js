@@ -1,12 +1,13 @@
-import React, { useContext, useEffect } from "react";
-import Axios from "axios";
-import { useImmer } from "use-immer";
+import React, { useEffect, useContext } from "react";
 import DispatchContext from "../DispatchContext";
+import { useImmer } from "use-immer";
+import Axios from "axios";
 import { Link } from "react-router-dom";
-import Post from './Post'
+import Post from "./Post";
 
-function Search(props) {
+function Search() {
   const appDispatch = useContext(DispatchContext);
+
   const [state, setState] = useImmer({
     searchTerm: "",
     results: [],
@@ -16,10 +17,7 @@ function Search(props) {
 
   useEffect(() => {
     document.addEventListener("keyup", searchKeyPressHandler);
-
-    return () => {
-      document.removeEventListener("keyup", searchKeyPressHandler);
-    };
+    return () => document.removeEventListener("keyup", searchKeyPressHandler);
   }, []);
 
   useEffect(() => {
@@ -27,7 +25,6 @@ function Search(props) {
       setState((draft) => {
         draft.show = "loading";
       });
-
       const delay = setTimeout(() => {
         setState((draft) => {
           draft.requestCount++;
@@ -45,7 +42,6 @@ function Search(props) {
   useEffect(() => {
     if (state.requestCount) {
       const ourRequest = Axios.CancelToken.source();
-
       async function fetchResults() {
         try {
           const response = await Axios.post(
@@ -53,18 +49,15 @@ function Search(props) {
             { searchTerm: state.searchTerm },
             { cancelToken: ourRequest.token }
           );
-          console.log(response.data);
           setState((draft) => {
             draft.results = response.data;
             draft.show = "results";
           });
         } catch (e) {
-          console.log(e, "There was a problem or the request was cancelled");
+          console.log("There was a problem or the request was cancelled.");
         }
       }
-
       fetchResults();
-
       return () => ourRequest.cancel();
     }
   }, [state.requestCount]);
@@ -112,7 +105,7 @@ function Search(props) {
           <div
             className={
               "circle-loader " +
-              (state.show === "loading" ? "circle-loader--visible" : "")
+              (state.show == "loading" ? "circle-loader--visible" : "")
             }
           ></div>
           <div
@@ -128,13 +121,19 @@ function Search(props) {
                   {state.results.length > 1 ? "items" : "item"} found)
                 </div>
                 {state.results.map((post) => {
-                  return <Post post={post} key={post._id} onClick={() => appDispatch({type:'closeSearch'})}/>
+                  return (
+                    <Post
+                      post={post}
+                      key={post._id}
+                      onClick={() => appDispatch({ type: "closeSearch" })}
+                    />
+                  );
                 })}
               </div>
             )}
             {!Boolean(state.results.length) && (
               <p className="alert alert-danger text-center shadow-sm">
-                Sorry we could not find any results for that search
+                Sorry, we could not find any results for that search.
               </p>
             )}
           </div>

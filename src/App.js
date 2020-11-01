@@ -16,8 +16,10 @@ import StateContext from "./StateContext";
 import EditPost from "./components/EditPost";
 import NotFound from "./components/NotFound";
 import Search from "./components/Search";
+import Chat from "./components/Chat";
 import { CSSTransition } from "react-transition-group";
 import Axios from "axios";
+
 import "./App.css";
 
 Axios.defaults.baseURL = "http://localhost:8080";
@@ -28,10 +30,12 @@ function App() {
     flashMessages: [],
     user: {
       token: localStorage.getItem("complexappToken"),
-      userName: localStorage.getItem("complexappUsername"),
+      username: localStorage.getItem("complexappUsername"),
       avatar: localStorage.getItem("complexappAvatar"),
     },
     isSearchOpen: false,
+    isChatOpen: false,
+    unreadChatCount: 0,
   };
 
   function ourReducer(draft, action) {
@@ -51,6 +55,18 @@ function App() {
         return;
       case "closeSearch":
         draft.isSearchOpen = false;
+        return;
+      case "toggleChat":
+        draft.isChatOpen = !draft.isChatOpen;
+        return;
+      case "closeChat":
+        draft.isChatOpen = false;
+        return;
+      case "incrementUnreadChatCount":
+        draft.unreadChatCount++
+        return;
+      case "clearUnreadChatCount":
+        draft.unreadChatCount = 0
         return;
     }
   }
@@ -109,6 +125,7 @@ function App() {
           >
             <Search />
           </CSSTransition>
+          <Chat />
           <Footer />
         </BrowserRouter>
       </DispatchContext.Provider>
